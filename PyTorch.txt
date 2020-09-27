@@ -1,0 +1,721 @@
+第1章 课程介绍-选择Pytorch的理由
+1-1 课程导学 (13:57)
+第2章 初识PyTorch框架与环境搭建
+2-1 初识Pytorch基本框架 (11:15)
+
+2-2 环境配置（1） (11:21)
+	https://www.php.cn/linux-373791.html
+	https://www.nvidia.com/Download/driverResults.aspx/145182/en-us
+
+	直接安装pytorch
+	# https://pytorch.org/get-started/locally/
+	anaconda promote 运行
+
+	pip安装（vpn）
+	pip install torch==1.6.0+cpu torchvision==0.7.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+
+	注意：需安装C++
+	
+2-3 环境配置（2） (08:48)
+
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+第3章 PyTorch入门基础串讲
+----------------------------------------------------------------------------------------
+3-1 机器学习中的分类与回归问题-机器学习基本构成元素 (11:15)
+----------------------------------------------------------------------------------------
+3-2 Tensor的基本定义 (06:21)
+----------------------------------------------------------------------------------------
+3-3 Tensor与机器学习的关系 (07:33)
+----------------------------------------------------------------------------------------
+3-4 Tensor创建编程实例 (19:55)
+
+import torch
+
+## 创建tensor
+a = torch.Tensor([[1,2],[3,4]])
+b = torch.Tensor(2,2)
+d = torch.tensor(((1,2),(3,4)))
+d.type()
+#> 'torch.LongTensor'
+
+##	特殊的Tensor
+a = torch.ones(2,3)
+a = torch.eye(3,3)  # 对角线是1
+b = torch.ones(2,3)
+
+a = torch.zeros_like(b)  # 引用数据size
+#a = torch.ones_like(b)
+
+##	随机
+torch.rand(2,2)
+# tensor([[0.6609, 0.7212],
+#         [0.7175, 0.7032]])
+
+##	正态分布
+torch.normal(mean=0.0, std=torch.rand(5))   #五维的五个标准差
+#> tensor([ 1.2602,  0.9843,  0.1350, -0.3621, -0.8227])
+
+# 用于参数的初始化！！
+torch.normal(mean=torch.rand(5), std=torch.rand(5))
+#> tensor([1.8870, 0.1224, 0.4896, 1.0461, 1.9208])
+
+##	均匀分布
+torch.Tensor(2,2).uniform_(-1,1)
+# tensor([[ 0.5922,  0.9279],
+#         [ 0.8809, -0.7130]])
+
+##	生成系列
+torch.arange(0,11)
+#> tensor([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10])
+
+##	等间隔序列
+torch.linspace(2,10,3)
+#>	tensor([ 2.,  6., 10.])
+
+
+##	索引乱序
+torch.randperm(10)
+#> tensor([4, 9, 1, 5, 2, 3, 0, 6, 8, 7])
+
+##	numpy
+import numpy as np
+np.array([[1,2],[3,4]])
+# array([[1, 2],
+#        [3, 4]])
+
+----------------------------------------------------------------------------------------
+3-5 Tensor的属性 (07:39)
+
+每个Tensor有3个属性
+1. torch.type
+2. torch.device
+	所存储的设备名称
+		cpu
+		gpu
+			cuda:0
+			cuda:1
+	定义方式:
+	- torch.Tensor([1,2,3], dtype=torch.float32, device=torch.device('cpu'))
+
+
+3. torch.layout
+	内部布局的对象
+	可以定义为稠密张量、稀疏张量（存储的非零元素的坐标）
+	定义方式：
+	- torch.sparse_coo_tensor
+	- coo类型标识了非零元素的坐标形式
+	- 方式
+		indices 坐标值
+			indices = torch.tensor([[0,1,1],[2,0,2]])
+		values 值
+			values = ttorch.tensor([3,4,5], dtype=torch.float32)
+		指定shape 
+			x = torch.shape_coo_tensor(i,v,[2,4])
+----------------------------------------------------------------------------------------
+3-6 Tensor的属性-稀疏的张量的编程实践 (07:39)
+import torch
+
+dev = torch.device("cpu")
+dev = torch.device("cuda")
+a = torch.tensor([2, 2],
+                 dtype=torch.float32,
+                 device=dev)
+print(a)
+
+i = torch.tensor([[0, 1, 2], [0, 1, 2]])
+v = torch.tensor([1, 2, 3])
+a = torch.sparse_coo_tensor(i, v, (4, 4),
+                            dtype=torch.float32,
+                            device=dev).to_dense()
+print(a)
+
+# 数据读取操作 -> CPU
+# 参数计算 -> GPU
+
+
+3-7 Tensor的算术运算 (08:12)
+----------------------------------------------------------------------------------------
+
+3-8 Tensor的算术运算编程实例 (17:06)
+import torch
+
+##add
+
+a = torch.rand(2, 3)
+b = torch.rand(2, 3)
+
+print(a)
+print(b)
+
+print(a + b)
+print(a.add(b))
+print(torch.add(a, b))
+print(a)
+print(a.add_(b))
+print(a)
+
+#sub
+print("==== sub res ====")
+print(a - b)
+print(torch.sub(a, b))
+print(a.sub(b))
+print(a.sub_(b))
+print(a)
+
+## mul
+print("===== mul ====")
+print(a * b)
+print(torch.mul(a, b))
+print(a.mul(b))
+print(a)
+print(a.mul_(b))
+print(a)
+
+# div
+print("=== div ===")
+print(a/b)
+print(torch.div(a, b))
+print(a.div(b))
+print(a.div_(b))
+print(a)
+
+###matmul
+
+a = torch.ones(2, 1)
+b = torch.ones(1, 2)
+print(a @ b)
+print(a.matmul(b))
+print(torch.matmul(a, b))
+print(torch.mm(a, b))
+print(a.mm(b))
+
+##高维tensor
+
+a = torch.ones(1, 2, 3, 4)
+b = torch.ones(1, 2, 4, 3)
+print(a.matmul(b).shape)
+
+##pow
+a = torch.tensor([1, 2])
+print(torch.pow(a, 3))
+print(a.pow(3))
+print(a**3)
+print(a.pow_(3))
+print(a)
+
+#exp
+a = torch.tensor([1, 2],
+                 dtype=torch.float32)
+print(a.type())
+print(torch.exp(a))
+print(torch.exp_(a))
+print(a.exp())
+print(a.exp_())
+
+##log
+a = torch.tensor([10, 2],
+                 dtype=torch.float32)
+print(torch.log(a))
+print(torch.log_(a))
+print(a.log())
+print(a.log_())
+
+##sqrt
+a = torch.tensor([10, 2],
+                 dtype=torch.float32)
+print(torch.sqrt(a))
+print(torch.sqrt_(a))
+
+print(a.sqrt())
+print(a.sqrt_())
+----------------------------------------------------------------------------------------
+
+3-9 in-place的概念和广播机制 (09:58)
+广播机制：张量参数自动扩展为相同大小
+广播机制需要满足两个条件：
+-每个张量至少有一个维度
+-满足右对齐
+-torch.rand(2,1,1) + torch.rand(3)
+
+import torch
+
+a = torch.rand(2, 2)
+b = torch.rand(1, 2)
+# a, 2*1
+# b, 1*2
+# c, 2*2
+# 2*4*2*3
+c = a + b
+print(a)
+print(b)
+print(c)
+print(c.shape)
+
+
+
+----------------------------------------------------------------------------------------
+3-10 取整-余 (03:49)
+
+import torch
+
+a = torch.rand(2, 2)
+a = a * 10
+print(a)
+
+print(torch.floor(a))
+print(torch.ceil(a))
+print(torch.round(a))
+print(torch.trunc(a))
+print(torch.frac(a))
+print(a % 2)
+b = torch.tensor([[2, 3], [4, 5]],
+                 dtype=torch.float)
+print(torch.fmod(a, b))
+print(torch.remainder(a, b))
+----------------------------------------------------------------------------------------
+3-11 比较运算-排序-topk-kthvalue-数据合法性校验 (18:28)
+import torch
+
+a = torch.rand(2, 3)
+b = torch.rand(2, 3)
+
+print(a)
+print(b)
+
+print(torch.eq(a, b))
+print(torch.equal(a, b))
+
+print(torch.ge(a, b))
+print(torch.gt(a, b))
+print(torch.le(a, b))
+print(torch.lt(a, b))
+print(torch.ne(a, b))
+
+####
+
+a = torch.tensor([[1, 4, 4, 3, 5],
+                  [2, 3, 1, 3, 5]])
+print(a.shape)
+print(torch.sort(a, dim=1,
+                 descending=False))
+
+##topk
+a = torch.tensor([[2, 4, 3, 1, 5],
+                  [2, 3, 5, 1, 4]])
+print(a.shape)
+
+print(torch.topk(a, k=2, dim=1, largest=False))
+
+print(torch.kthvalue(a, k=2, dim=0))
+print(torch.kthvalue(a, k=2, dim=1))
+
+a = torch.rand(2, 3)
+print(a)
+print(a/0)
+print(torch.isfinite(a))
+print(torch.isfinite(a/0))
+print(torch.isinf(a/0))
+print(torch.isnan(a))
+
+import numpy as np
+a = torch.tensor([1, 2, np.nan])
+print(torch.isnan(a))
+
+a = torch.rand(2, 3)
+print(a)
+print(torch.topk(a, k=2, dim=1, largest=False))
+print(torch.topk(a, k=2, dim=1, largest=True))
+
+# 4. 指定维度上第k个最小值
+a = torch.tensor([[3,1,2,5,4,6],[1,53,1,36,22,239]])
+torch.kthvalue(a, k=2, dim=0)
+torch.kthvalue(a, k=2, dim=1)
+----------------------------------------------------------------------------------------
+3-12 三角函数 (04:18)
+import torch
+a = torch.rand(2,3)
+print(a)
+torch.cos(a)
+
+tensor([[0.0661, 0.8232, 0.7911],
+        [0.5418, 0.0983, 0.7628]])
+tensor([[0.9978, 0.6799, 0.7030],
+        [0.8568, 0.9952, 0.7229]])
+
+a = torch.ones(2,3)
+torch.cos(a)
+a = torch.ones(2,3)
+torch.cos(a)
+# tensor([[0.5403, 0.5403, 0.5403],
+#         [0.5403, 0.5403, 0.5403]])
+
+a = torch.zeros(2,3)
+torch.cos(a)
+# tensor([[1., 1., 1.],
+#         [1., 1., 1.]])
+
+----------------------------------------------------------------------------------------
+3-13 其他数学函数 (05:33)
+torch.abs()  -> L1 Loss
+torch.sigmoid() -> 激活函数，用于二分类任务中
+torch.sign()  ->符号函数, 分段函数, x<0 = -1, x>0 = 1, x=1 =0
+----------------------------------------------------------------------------------------
+3-14 Pytorch与统计学方法 (14:55)
+import torch
+
+a = torch.rand(2, 2)
+
+print(a)
+print(torch.mean(a, dim=0))
+print(torch.sum(a, dim=0))
+print(torch.prod(a, dim=0))
+
+print(torch.argmax(a, dim=0))
+print(torch.argmin(a, dim=0))
+
+print(torch.std(a))
+print(torch.var(a))
+
+print(torch.median(a))
+print(torch.mode(a))
+
+
+a = torch.rand(2, 2) * 10
+print(a)
+print(torch.histc(a, 6, 0, 0))
+
+a = torch.randint(0, 10, [2, 10])
+print(a)
+print(torch.bincount(a))
+#统计某一类别样本的个数
+
+----------------------------------------------------------------------------------------
+3-15 Pytorch与分布函数 (04:56)
+----------------------------------------------------------------------------------------
+3-16 Pytorch与随机抽样 (05:15)
+import torch
+torch.manual_seed(1)
+mean = torch.rand(1, 2)
+std  = torch.rand(1, 2)
+print(torch.normal(mean, std))
+
+----------------------------------------------------------------------------------------
+3-17 Pytorch与线性代数运算 (09:18)
+# Tensor 中的范数运算
+
+# 范数
+# 1. 在泛函分析中，他定义在赋范线性空间中，并满足一定条件
+#       ①非负性
+#       ②齐次性
+#       ③三角不等式
+# 2. 常备用来度量某个向量精简（或矩阵）中的每个向量的长度和大小
+
+# 0范数/1范数/2范数/P范数/核范数
+# torch.dist(input,other,p=2) 计算p范数
+# torch.norm() 计算2范数
+
+# 范数可以完成对模型参数的约束
+
+# 核范数（低秩数据）
+
+import torch
+
+a = torch.rand(2, 1)
+b = torch.rand(2, 1)
+print(a, b)
+print(torch.dist(a, b, p = 1))
+print(torch.dist(a, b, p = 2))
+print(torch.dist(a, b, p = 3))
+
+print(torch.norm(a))
+print(torch.norm(a, p=3))
+
+#核范数
+print(torch.norm(a, p='fro'))
+----------------------------------------------------------------------------------------
+3-18 Pytorch与矩阵分解-PCA (19:52)
+# 常见的矩阵分解
+#     LU分解：将矩阵分解成L（下三角）矩阵和 U（上三角）矩阵的乘积
+#     QR分解：将原矩阵分解成一个正交矩阵Q和一个上三角矩阵R的乘积
+#     EVD分解：特征值分解  <- PCA
+#     SVD分解：奇异值分解  <- LDA 判别分析
+----------------------------------------------------------------------------------------
+3-19 Pytorch与矩阵分解-SVD分解-LDA (13:09)
+----------------------------------------------------------------------------------------
+3-20 Pytorch与张量裁剪 (08:48)
+# 将数值约束修正至指定的范围之内
+import torch
+
+a = torch.rand(2, 7) * 10
+print(a)
+a = a.clamp(2, 8)
+print(a)
+
+----------------------------------------------------------------------------------------
+3-21 Pytorch与张量的索引与数据筛选 (27:08)
+
+# 按照条件从x、y中选出满足条件的元素组成新的tensor
+torch.where(condition,x,y)
+
+# 在指定维度上按照索引赋值输出tensor
+torch.gather(input, dim, index, out=None)
+
+# 按照指定索引输出tensor
+torch.index_select(input, dim, index, out=None)
+
+# 按照msak输出tensor，输出为向量
+torch.masked_select(input,mask, out=None)
+
+# 键输入看成1D-tensor，按照索引得到输出tensor
+torch.take(input, indices)
+
+# 输出非零元素的坐标
+torch.nonzero(inpout, out=None
+
+# torch.where
+a = torch.rand(4,4)
+b = torch.rand(4,4)
+# 大于0.5的取a集合的值，小于0.5的取b集合的值
+out = torch.where(a>0.5, a, b)
+
+## torch.index_select
+a = torch.rand(4,4)
+# 在第0维上进行index的索引、返回
+torch.index_select(a,dim=0,index=torch.tensor([0,3,2]))
+
+##	torch.gather
+a = torch.linspace(1,16,16).view(4,4)
+torch.gather(a, dim=0, index=torch.tensor([[0,1,1,1],
+                                          [0,1,2,2],
+                                          [0,1,3,3]]))
+
+# tensor([[ 1.,  6.,  7.,  8.],
+#         [ 1.,  6., 11., 12.],
+#         [ 1.,  6., 15., 16.]])          
+
+# 高纬度gather用法
+# dim=0, out[i,j,k] = input[index[i,j,k],j,k]
+
+##	torch.masked_select
+a = torch.linspace(1,16,16).view(4,4)
+mask = torch.gt(a,8)
+out = torch.masked_select(a,mask)
+
+##	torch.take
+a = torch.linspace(1,16,16).view(4,4)
+# 输出的事一维向量
+torch.take(a, index=torch.tensor([0,15,13,10]))
+
+##	torch.nonzero
+# 多用于稀疏表示、取值，以节省空间
+a = torch.tensor([[0,1,12,3],[2,3,4,0]])
+torch.nonzero(a)
+# tensor([[0, 1],
+#         [0, 2],
+#         [0, 3],
+#         [1, 0],
+#         [1, 1],
+#         [1, 2]])                          
+----------------------------------------------------------------------------------------
+3-22 Pytorch与张量组合与拼接 (11:34)
+# 按照已经存在的维度进行拼接
+torch.cat(seq, dim=0, out=None)
+
+# 按照新的维度进行拼接
+torch.stack(seq, dim=0, out=None)
+
+#再制定维度上按照索引赋值，输出tensor
+torch.gather(input,dim,index,out=None
+
+import torch
+
+a = torch.zeros((2, 4))
+b = torch.ones((2, 4))
+
+out = torch.cat((a,b),dim=0)
+print(out)
+
+out = torch.cat((a,b),dim=1)
+print(out)
+
+#torch.stack
+
+print("torch.stack")
+a = torch.linspace(1, 6, 6).view(2, 3)
+b = torch.linspace(7, 12, 6).view(2, 3)
+print(a, b)
+out = torch.stack((a, b), dim=2)
+print(out)
+print(out.shape)
+
+print(out[:, :, 0])
+print(out[:, :, 1])
+----------------------------------------------------------------------------------------
+3-23 Pytorch与张量切片 (07:37)
+# 按照某个维度平均分块，最后一个可能小于平均值
+torch.chunk(tensor,chunks,dim=0)
+
+# 按照某个维度依照第二个参数给出的list或int进行分割tensor
+torch.split(tensor, split_size_or_sections, dim=0)
+
+import torch
+
+a = torch.rand((3, 4))
+print(a)
+out = torch.chunk(a, 2, dim=1)
+print(out[0], out[0].shape)
+print(out[1], out[1].shape)
+
+
+a = torch.rand((10, 4))
+print(a)
+out = torch.split(a, 3, dim=0)
+print(len(out))
+for t in out:
+    print(t, t.shape)
+
+out = torch.split(a, [1, 3, 6], dim=0)
+for t in out:
+    print(t, t.shape)
+
+
+----------------------------------------------------------------------------------------
+3-24 Pytorch与张量变形 (14:09)
+----------------------------------------------------------------------------------------
+3-25 Pytorch与张量填充&傅里叶变换 (03:27)
+----------------------------------------------------------------------------------------
+3-26 Pytorch简单编程技巧 (11:33)
+----------------------------------------------------------------------------------------
+3-27 Pytorch与autograd-导数-方向导数-偏导数-梯度的概念 (10:02)
+----------------------------------------------------------------------------------------
+3-28 Pytorch与autograd-梯度与机器学习最优解 (12:46)
+----------------------------------------------------------------------------------------
+3-29 Pytorch与autograd-Variable$tensor (02:57)
+----------------------------------------------------------------------------------------
+3-30 Pytorch与autograd-如何计算梯度 (03:04)
+----------------------------------------------------------------------------------------
+3-31 Pytorch与autograd中的几个重要概念-variable-grad-grad_fn (10:32)
+----------------------------------------------------------------------------------------
+3-32 Pytorch与autograd中的几个重要概念-autograd例子 (14:15)
+----------------------------------------------------------------------------------------
+3-33 Pytorch与autograd中的几个重要概念-function (08:18)
+----------------------------------------------------------------------------------------
+3-34 Pytorch与nn库 (19:46)
+----------------------------------------------------------------------------------------
+3-35 Pytorch与visdom (04:56)
+----------------------------------------------------------------------------------------
+3-36 Pytorch与tensorboardX (05:57)
+----------------------------------------------------------------------------------------
+3-37 Pytorch与torchvision (02:21)
+----------------------------------------------------------------------------------------
+第4章 PyTorch搭建简单神经网络
+
+4-1 机器学习和神经网络的基本概念（1） (20:53)
+4-2 机器学习和神经网络的基本概念（2） (17:16)
+4-3 利用神经网络解决分类和回归问题（1） (18:27)
+4-4 利用神经网络解决分类和回归问题（2） (18:46)
+4-5 利用神经网络解决分类和回归问题（3） (13:08)
+4-6 利用神经网络解决分类和回归问题（4） (12:06)
+4-7 利用神经网络解决分类和回归问题（5） (13:29)
+第5章 计算机视觉与卷积神经网络基础串讲
+5-1 计算机视觉基本概念 (23:01)
+5-2 图像处理常见概念 (24:30)
+5-3 特征工程 (14:07)
+5-4 卷积神经网（上） (12:36)
+5-5 卷积神经网（下） (12:04)
+5-6 pooling层 (05:07)
+5-7 激活层-BN层-FC层-损失层 (12:13)
+5-8 经典卷积神经网络结构 (09:54)
+5-9 轻量型网络结构 (07:35)
+5-10 多分支网络结构 (03:42)
+5-11 attention的网络结构 (08:24)
+5-12 学习率 (04:43)
+5-13 优化器 (07:32)
+5-14 卷积神经网添加正则化 (03:27)
+第6章 PyTorch实战计算机视觉任务-Cifar10图像分类
+6-1 图像分类网络模型框架解读（上） (15:04)
+6-2 图像分类网络模型框架解读（下） (15:41)
+6-3 cifar10数据介绍-读取-处理（上） (09:43)
+6-4 cifar10数据介绍-读取-处理（下） (10:49)
+6-5 PyTorch自定义数据加载-加载Cifar10数据 (15:23)
+6-6 PyTorch搭建 VGGNet 实现Cifar10图像分类 (15:03)
+6-7 PyTorch搭建cifar10训练脚本-tensorboard记录LOG（上） (14:48)
+6-8 PyTorch搭建cifar10训练脚本-tensorboard记录LOG（下） (19:36)
+6-9 PyTorch搭建cifar10训练脚本搭建-ResNet结构（上） (16:56)
+6-10 PyTorch搭建cifar10训练脚本搭建-ResNet结构（下） (10:29)
+6-11 PyTorch搭建cifar10训练脚本搭建-Mobilenetv1结构 (11:34)
+6-12 PyTorch搭建cifar10训练脚本搭建-Inception结构（上） (15:04)
+6-13 PyTorch搭建cifar10训练脚本搭建-Inception结构（下） (09:13)
+6-14 PyTorch搭建cifar10训练脚本搭建-调用Pytorch标准网络ResNet18等 (06:05)
+6-15 PyTorch搭建cifar10推理测试脚本搭建 (08:30)
+6-16 分类问题优化思路 (17:12)
+6-17 分类问题最新研究进展和方向 (06:33)
+第7章 Pytorch实战计算机视觉任务-Pascal VOC目标检测问题
+7-1 目标检测问题介绍（上） (14:09)
+7-2 目标检测问题介绍（下） (11:47)
+7-3 Pascal VOC-COCO数据集介绍 (05:14)
+7-4 MMdetection框架介绍-安装说明 (15:11)
+7-5 MMdetection框架使用说明 (12:18)
+7-6 MMdetection训练Passcal VOC目标检测任务（上） (17:26)
+7-7 MMdetection训练Passcal VOC目标检测任务（中） (16:27)
+7-8 MMdetection训练Passcal VOC目标检测任务（下） (11:51)
+7-9 MMdetection Test脚本 (03:36)
+7-10 MMdetection LOG分析 (05:43)
+第8章 PyTorch实战计算机视觉任务-COCO目标分割问题
+8-1 图像分割基本概念 (10:37)
+8-2 图像分割方法介绍 (19:02)
+8-3 图像分割评价指标及目前面临的挑战 (09:51)
+8-4 COCO数据集介绍 (04:20)
+8-5 detectron框架介绍和使用简单说明 (10:09)
+8-6 coco数据集标注文件解析 (07:52)
+8-7 detectron源码解读和模型训练-demo测试 (37:29)
+第9章 PyTorch搭建GAN网络实战图像风格迁移
+9-1 GAN的基础概念和典型模型介绍（上） (15:03)
+9-2 GAN的基础概念和典型模型介绍（下） (13:02)
+9-3 图像风格转换数据下载与自定义dataset类 (11:14)
+9-4 cycleGAN模型搭建-model (16:15)
+9-5 cycleGAN模型搭建-train（上） (18:02)
+9-6 cycleGAN模型搭建-train（下） (18:28)
+9-7 cycleGAN模型搭建-test (06:40)
+第10章 循环神经网与NLP基础串讲
+10-1 RNN网络基础 (07:18)
+10-2 RNN常见网络结构-simple RNN网络 (10:56)
+10-3 Bi-RNN网络 (04:42)
+10-4 LSTM网络基础 (13:58)
+10-5 Attention结构 (09:41)
+10-6 Transformer结构 (13:15)
+10-7 BERT结构 (07:21)
+10-8 NLP基础概念介绍 (15:06)
+第11章 PyTorch实战中文文本情感分类问题
+11-1 文本情感分析-情感分类概念介绍 (09:34)
+11-2 文本情感分类关键流程介绍 (02:25)
+11-3 文本情感分类之文本预处理 (06:33)
+11-4 文本情感分类之特征提取与文本表示 (05:15)
+11-5 文本情感分类之深度学习模型 (08:33)
+11-6 文本情感分类-数据准备 (16:42)
+11-7 文本情感分类-dataset类定义 (12:32)
+11-8 文本情感分类-model类定义 (11:37)
+11-9 文本情感分类-train脚本定义 (13:37)
+11-10 文本情感分类-test脚本定义 (05:06)
+第12章 PyTorch实战机器翻译问题
+12-1 机器翻译相关方法-应用场景-评价方法 (14:23)
+12-2 Seq2Seq-Attention编程实例数据准备-模型结构-相关函数 (05:31)
+12-3 Seq2Seq-Attention编程实例-定义数据处理模块 (17:08)
+12-4 Seq2Seq-Attention编程实例-定义模型结构模块（上） (13:10)
+12-5 Seq2Seq-Attention编程实例-定义模型结构模块（下） (13:46)
+12-6 Seq2Seq-Attention编程实例-定义train模块（上） (13:03)
+12-7 Seq2Seq-Attention编程实例-定义train模块（下） (10:33)
+12-8 Seq2Seq-Attention编程实例-定义train模块-loss function (20:10)
+12-9 Seq2Seq-Attention编程实例-定义eval模块 (08:40)
+第13章 PyTorch工程应用介绍
+13-1 PyTorch模型开发与部署基础平台介绍 (09:39)
+13-2 PyTorch工程化基础--Torchscript (09:15)
+13-3 PyTorch服务端发布平台--Torchserver (06:31)
+13-4 PyTorch终端推理基础--ONNX (06:05)
+第14章 【选修】Linux操作基础串讲
+14-1 linux操作基础串讲 (19:18)
+第15章 课程总结与回顾
+15-1 课程总结 (11:14)

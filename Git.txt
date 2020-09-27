@@ -1,4 +1,4 @@
-C:\Users\tianyunchuan\iCloudDrive\Desktop\_win_Trans_mac_\_github
+C:/Users/tianyunchuan/iCloudDrive/_shareFile_/_github
 【基础操作】
 git remote add origin https://github.com/tianyunchuan-1/Survey-FaCoding.git
 git remote add origin https://github.com/tianyunchuan-1/note.git

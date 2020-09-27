@@ -3144,6 +3144,8 @@ excel 2010 VBA
             如果工作簿中含有VBA代码，那么文件夹中还有以bin为扩展名的二进制文件。
             Content_Types.xml:列出了包括在Excel文件程序包中其它部件的内容类型。
 
+            用winRAR打开
+
 
 
 
@@ -5514,6 +5516,19 @@ excel_2013_vba
         查找
             Set rng = Range("a:a").Find("项目")
             num = WorksheetFunction.CountIf([b:b], "人事部")  #查找个数
+
+        追加
+
+            获取多维数组的size：
+                Sub ShowArrayBounds()
+                    Dim givenData(3 To 5, 5 To 7) As Double
+
+                    MsgBox LBound(givenData, 1)
+                    MsgBox UBound(givenData, 1)
+                    MsgBox LBound(givenData, 2)
+                    MsgBox UBound(givenData, 2)
+
+                End Sub
 
     2013_第七章：VBA与图表
 
